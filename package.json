@@ -1,0 +1,17 @@
+{
+  "name": "college-discovery-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "start": "node backend/startup.js && node backend/server.js",
+    "install-backend": "cd backend && npm install",
+    "install-all": "npm run install-backend && npm run install-frontend",
+    "install-frontend": "cd frontend && npm install",
+    "seed": "node backend/seed_csv.js",
+    "dev": "node dev-runner.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  }
+}
