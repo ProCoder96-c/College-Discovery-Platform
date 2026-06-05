@@ -2,12 +2,28 @@ const { DatabaseSync } = require('node:sqlite');
 const path = require('path');
 const fs = require('fs');
 
-const dbPath = process.env.DB_PATH || path.join(__dirname, 'database.sqlite');
+let dbPath = process.env.DB_PATH;
+let db;
 
-// Ensure the parent directory exists (crucial for custom volume mounts)
-fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+if (dbPath) {
+  try {
+    // Try to ensure parent directory exists and open the custom DB
+    fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+    db = new DatabaseSync(dbPath);
+    console.log(`Successfully connected to SQLite database at: ${dbPath}`);
+  } catch (err) {
+    console.error(`WARNING: Failed to use custom DB_PATH (${dbPath}) due to error: ${err.message}. Falling back to local database.`);
+    db = null; // trigger fallback
+  }
+}
 
-const db = new DatabaseSync(dbPath);
+// Fallback connection (local DB)
+if (!db) {
+  dbPath = path.join(__dirname, 'database.sqlite');
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+  db = new DatabaseSync(dbPath);
+  console.log(`Successfully connected to SQLite database at default local path: ${dbPath}`);
+}
 
 // Initialize tables
 function initDB() {
